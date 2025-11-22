@@ -32,7 +32,7 @@ class DashboardHeader extends StatelessWidget {
               style: AppTextStyles.caption.copyWith(color: Colors.white70),
             ),
             Text(
-              'Shihab Rahman',
+              'Ahmed Sami',
               style: AppTextStyles.h4.copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

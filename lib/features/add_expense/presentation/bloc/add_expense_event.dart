@@ -9,6 +9,11 @@ abstract class AddExpenseEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+/// Event to load available currencies
+class LoadCurrencies extends AddExpenseEvent {
+  const LoadCurrencies();
+}
+
 /// Event when category is selected
 class CategorySelected extends AddExpenseEvent {
   final Category category;

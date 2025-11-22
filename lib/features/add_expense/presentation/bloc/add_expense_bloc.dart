@@ -3,6 +3,7 @@ import 'package:inovola_task/features/add_expense/domain/usecases/convert_curren
 import 'package:uuid/uuid.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../dashboard/domain/entities/expense.dart';
+import '../../domain/repositories/currency_repository.dart';
 import '../../domain/usecases/add_expense.dart';
 import 'add_expense_event.dart';
 import 'add_expense_state.dart';
@@ -11,9 +12,14 @@ import 'add_expense_state.dart';
 class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
   final AddExpense addExpense;
   final ConvertCurrency convertCurrency;
+  final CurrencyRepository currencyRepository;
 
-  AddExpenseBloc({required this.addExpense, required this.convertCurrency})
-    : super(AddExpenseFormState(selectedDate: DateTime.now())) {
+  AddExpenseBloc({
+    required this.addExpense,
+    required this.convertCurrency,
+    required this.currencyRepository,
+  }) : super(AddExpenseFormState(selectedDate: DateTime.now())) {
+    on<LoadCurrencies>(_onLoadCurrencies);
     on<CategorySelected>(_onCategorySelected);
     on<AmountChanged>(_onAmountChanged);
     on<DateSelected>(_onDateSelected);
@@ -21,6 +27,30 @@ class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
     on<ReceiptUploaded>(_onReceiptUploaded);
     on<SaveExpense>(_onSaveExpense);
     on<ResetForm>(_onResetForm);
+  }
+
+  Future<void> _onLoadCurrencies(
+    LoadCurrencies event,
+    Emitter<AddExpenseState> emit,
+  ) async {
+    if (state is! AddExpenseFormState) return;
+
+    final currentState = state as AddExpenseFormState;
+
+    // Fetch exchange rates
+    final result = await currencyRepository.getExchangeRates();
+
+    result.fold(
+      (failure) {
+        // If failed, keep default USD
+        // User can still use the app with USD
+      },
+      (exchangeRate) {
+        // Extract currency codes from rates map
+        final currencies = exchangeRate.rates.keys.toList()..sort();
+        emit(currentState.copyWith(availableCurrencies: currencies));
+      },
+    );
   }
 
   void _onCategorySelected(

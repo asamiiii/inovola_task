@@ -22,6 +22,7 @@ class AddExpenseFormState extends AddExpenseState {
   final String selectedCurrency;
   final String? receiptPath;
   final String? errorMessage;
+  final List<String> availableCurrencies;
 
   const AddExpenseFormState({
     this.selectedCategory,
@@ -30,6 +31,7 @@ class AddExpenseFormState extends AddExpenseState {
     this.selectedCurrency = 'USD',
     this.receiptPath,
     this.errorMessage,
+    this.availableCurrencies = const ['USD'],
   });
 
   @override
@@ -40,6 +42,7 @@ class AddExpenseFormState extends AddExpenseState {
     selectedCurrency,
     receiptPath,
     errorMessage,
+    availableCurrencies,
   ];
 
   AddExpenseFormState copyWith({
@@ -49,6 +52,7 @@ class AddExpenseFormState extends AddExpenseState {
     String? selectedCurrency,
     String? receiptPath,
     String? errorMessage,
+    List<String>? availableCurrencies,
     bool clearError = false,
   }) {
     return AddExpenseFormState(
@@ -58,6 +62,7 @@ class AddExpenseFormState extends AddExpenseState {
       selectedCurrency: selectedCurrency ?? this.selectedCurrency,
       receiptPath: receiptPath ?? this.receiptPath,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      availableCurrencies: availableCurrencies ?? this.availableCurrencies,
     );
   }
 

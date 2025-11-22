@@ -13,10 +13,40 @@ import '../widgets/balance_card_widget.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../widgets/dashboard_header.dart';
 import '../widgets/dashboard_background.dart';
+import '../widgets/expense_list.dart';
 
 /// Dashboard screen showing expenses and summary
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.9) {
+      final state = context.read<DashboardBloc>().state;
+      if (state is DashboardLoaded && state.hasMore) {
+        context.read<DashboardBloc>().add(const LoadMoreExpenses());
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +130,7 @@ class DashboardScreen extends StatelessWidget {
         context.read<DashboardBloc>().add(const RefreshDashboard());
       },
       child: SingleChildScrollView(
+        controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           children: [
@@ -263,7 +294,7 @@ class DashboardScreen extends StatelessWidget {
           ),
           // Amount
           Text(
-            '-\$${expense.amount.toStringAsFixed(2)}',
+            '-\$${expense.convertedAmount.toStringAsFixed(2)}',
             style: AppTextStyles.bodyMedium.copyWith(
               fontWeight: FontWeight.w600,
               color: AppColors.expense,

@@ -1,0 +1,39 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  quick-checks:
+    name: Quick Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      
+      - name: Get dependencies
+        run: flutter pub get
+      
+      - name: Verify dependencies
+        run: flutter pub outdated
+        continue-on-error: true
+      
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+      
+      - name: Run code generation
+        run: flutter pub run build_runner build --delete-conflicting-outputs
+      
+      - name: Quick analyze
+        run: flutter analyze --no-fatal-infos
+      
+      - name: Run tests (quick)
+        run: flutter test --reporter compact

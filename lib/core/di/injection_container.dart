@@ -97,6 +97,10 @@ Future<void> initializeDependencies() async {
   );
 
   sl.registerFactory(
-    () => AddExpenseBloc(addExpense: sl(), convertCurrency: sl()),
+    () => AddExpenseBloc(
+      addExpense: sl(),
+      convertCurrency: sl(),
+      currencyRepository: sl(),
+    ),
   );
 }

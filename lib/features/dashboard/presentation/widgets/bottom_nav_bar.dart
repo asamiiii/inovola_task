@@ -42,7 +42,7 @@ class BottomNavBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isActive ? AppColors.primary : Colors.transparent,
+        color: isActive ? AppColors.primaryDark : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Icon(
