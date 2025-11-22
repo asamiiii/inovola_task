@@ -105,4 +105,9 @@ class AppConstants {
   static const double iconSizeM = 24.0;
   static const double iconSizeL = 32.0;
   static const double iconSizeXL = 48.0;
+
+  // UI Behavior
+  static const double scrollThresholdForPagination = 0.85;
+  static const int paginationDelayMs = 800;
+  static const int loadingFlagResetDelaySeconds = 5;
 }

@@ -22,7 +22,8 @@ class DashboardLoading extends DashboardState {
 
 /// Loaded state with data
 class DashboardLoaded extends DashboardState {
-  final List<Expense> expenses;
+  final List<Expense> expenses; // Currently displayed expenses
+  final List<Expense> allFilteredExpenses; // All expenses matching filter
   final ExpenseSummary summary;
   final String currentFilter;
   final bool hasMore;
@@ -30,6 +31,7 @@ class DashboardLoaded extends DashboardState {
 
   const DashboardLoaded({
     required this.expenses,
+    required this.allFilteredExpenses,
     required this.summary,
     required this.currentFilter,
     required this.hasMore,
@@ -39,6 +41,7 @@ class DashboardLoaded extends DashboardState {
   @override
   List<Object?> get props => [
     expenses,
+    allFilteredExpenses,
     summary,
     currentFilter,
     hasMore,
@@ -47,6 +50,7 @@ class DashboardLoaded extends DashboardState {
 
   DashboardLoaded copyWith({
     List<Expense>? expenses,
+    List<Expense>? allFilteredExpenses,
     ExpenseSummary? summary,
     String? currentFilter,
     bool? hasMore,
@@ -54,6 +58,7 @@ class DashboardLoaded extends DashboardState {
   }) {
     return DashboardLoaded(
       expenses: expenses ?? this.expenses,
+      allFilteredExpenses: allFilteredExpenses ?? this.allFilteredExpenses,
       summary: summary ?? this.summary,
       currentFilter: currentFilter ?? this.currentFilter,
       hasMore: hasMore ?? this.hasMore,

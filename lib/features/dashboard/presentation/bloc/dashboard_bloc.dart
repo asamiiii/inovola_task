@@ -61,6 +61,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             emit(
               DashboardLoaded(
                 expenses: firstPage,
+                allFilteredExpenses: allExpenses,
                 summary: summary,
                 currentFilter: AppConstants.filterThisMonth,
                 hasMore: hasMore,
@@ -91,53 +92,40 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       ),
     );
 
-    // Get filtered expenses based on current filter
-    final dateRange = _getDateRangeForFilter(currentState.currentFilter);
-    final expensesResult = await getFilteredExpenses(
-      startDate: dateRange['start'],
-      endDate: dateRange['end'],
+    // Add a small delay to make pagination visible
+    await Future.delayed(
+      Duration(milliseconds: AppConstants.paginationDelayMs),
     );
 
-    expensesResult.fold(
-      (failure) {
-        emit(
-          DashboardLoaded(
-            expenses: currentState.expenses,
-            summary: currentState.summary,
-            currentFilter: currentState.currentFilter,
-            hasMore: currentState.hasMore,
-            currentPage: currentState.currentPage,
-          ),
-        );
-      },
-      (allExpenses) {
-        final nextPage = currentState.currentPage + 1;
-        final startIndex = nextPage * AppConstants.itemsPerPage;
-        final endIndex = startIndex + AppConstants.itemsPerPage;
+    // Get next page from cached allFilteredExpenses
+    final nextPage = currentState.currentPage + 1;
+    final startIndex = nextPage * AppConstants.itemsPerPage;
+    final endIndex = startIndex + AppConstants.itemsPerPage;
 
-        if (startIndex >= allExpenses.length) {
-          emit(currentState.copyWith(hasMore: false));
-          return;
-        }
+    if (startIndex >= currentState.allFilteredExpenses.length) {
+      emit(currentState.copyWith(hasMore: false));
+      return;
+    }
 
-        final newExpenses = allExpenses.sublist(
-          startIndex,
-          endIndex > allExpenses.length ? allExpenses.length : endIndex,
-        );
+    final newExpenses = currentState.allFilteredExpenses.sublist(
+      startIndex,
+      endIndex > currentState.allFilteredExpenses.length
+          ? currentState.allFilteredExpenses.length
+          : endIndex,
+    );
 
-        final updatedExpenses = [...currentState.expenses, ...newExpenses];
-        final hasMore = endIndex < allExpenses.length;
+    final updatedExpenses = [...currentState.expenses, ...newExpenses];
+    final hasMore = endIndex < currentState.allFilteredExpenses.length;
 
-        emit(
-          DashboardLoaded(
-            expenses: updatedExpenses,
-            summary: currentState.summary,
-            currentFilter: currentState.currentFilter,
-            hasMore: hasMore,
-            currentPage: nextPage,
-          ),
-        );
-      },
+    emit(
+      DashboardLoaded(
+        expenses: updatedExpenses,
+        allFilteredExpenses: currentState.allFilteredExpenses,
+        summary: currentState.summary,
+        currentFilter: currentState.currentFilter,
+        hasMore: hasMore,
+        currentPage: nextPage,
+      ),
     );
   }
 
@@ -176,6 +164,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             emit(
               DashboardLoaded(
                 expenses: firstPage,
+                allFilteredExpenses: allExpenses,
                 summary: summary,
                 currentFilter: event.filter,
                 hasMore: hasMore,
